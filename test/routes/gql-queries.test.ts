@@ -189,7 +189,7 @@ await test('gql-queries', async (t) => {
           }
       }`,
     });
-
+    
     t.ok(!errorsUser);
     t.ok(!errorsUsers);
     t.ok(dataUser.user.id === user1.id);
