@@ -1,6 +1,6 @@
 import { FastifyInstance } from 'fastify';
 import { GraphQLList } from 'graphql';
-import { enumMemberId, memberTypes } from '../types/memberType.js';
+import { memberId, memberTypes } from '../types/memberType.js';
 import { MemberTypeId } from '../../member-types/schemas.js';
 
 export const membersResolver = {
@@ -12,7 +12,7 @@ export const membersResolver = {
 
 export const memberResolver = {
   type: memberTypes,
-  args: { id: { type: enumMemberId } },
+  args: { id: { type: memberId } },
   resolve: (parent, args: { id: MemberTypeId }, context: FastifyInstance) => {
     if (!args.id) return null;
     return context.prisma.memberType.findUnique({

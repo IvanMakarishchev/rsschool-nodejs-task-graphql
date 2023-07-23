@@ -6,6 +6,9 @@ import { userResolver, usersResolver } from './resolves/usersResolver.js';
 import { postResolver, postsResolver } from './resolves/postResolver.js';
 import { memberResolver, membersResolver } from './resolves/memberResolver.js';
 import depthLimit from 'graphql-depth-limit';
+import { PrismaClient } from '@prisma/client';
+
+export const prismaDB = new PrismaClient();
 
 // const Post = new GraphQLObjectType({
 //   name: 'Post',
