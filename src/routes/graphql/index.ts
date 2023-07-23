@@ -1,71 +1,25 @@
 import { FastifyPluginAsyncTypebox } from '@fastify/type-provider-typebox';
 import { createGqlResponseSchema, gqlResponseSchema } from './schemas.js';
-import { GraphQLObjectType, GraphQLSchema, graphql, parse, validate } from 'graphql';
+import {
+  GraphQLNonNull,
+  GraphQLObjectType,
+  GraphQLSchema,
+  graphql,
+} from 'graphql';
 import { profilesResolver, profileResolver } from './resolves/profileResolver.js';
 import { userResolver, usersResolver } from './resolves/usersResolver.js';
 import { postResolver, postsResolver } from './resolves/postResolver.js';
 import { memberResolver, membersResolver } from './resolves/memberResolver.js';
-import depthLimit from 'graphql-depth-limit';
+import { post } from './types/postType.js';
+import { FastifyInstance } from 'fastify';
+import { createPostInput } from './mutations/createPostData.js';
+import { user } from './types/userType.js';
+import { profileType } from './types/profileType.js';
+import { createUserInput } from './mutations/createUserData.js';
+import { createProfileInput } from './mutations/createProfileData.js';
 import { PrismaClient } from '@prisma/client';
 
 export const prismaDB = new PrismaClient();
-
-// const Post = new GraphQLObjectType({
-//   name: 'Post',
-//   fields: () => ({
-//     id: { type: GraphQLID },
-//     title: { type: GraphQLString },
-//     content: { type: GraphQLString },
-//     author: new GraphQLList(User),
-//     authorId: { type: GraphQLID },
-//   }),
-// });
-
-// const SubscribersOnAuthors = new GraphQLObjectType({
-//   name: 'SubscribersOnAuthors',
-//   fields: () => ({
-//     subscriber: new GraphQLList(User),
-//     subscriberId: { type: GraphQLID },
-//     author: new GraphQLList(User),
-//     authorId: { type: GraphQLID },
-//   }),
-// });
-
-// const Profile = new GraphQLObjectType({
-//   name: 'Profile',
-//   fields: () => ({
-//     id: { type: GraphQLID },
-//     isMale: { type: GraphQLBoolean },
-//     yearOfBirth: { type: GraphQLInt },
-//     user: new GraphQLList(User),
-//     userId: { type: GraphQLID },
-//     memberType: { type: MemberType },
-//     memberTypeId: { type: GraphQLString },
-//   }),
-// });
-
-// const User = new GraphQLObjectType({
-//   name: 'User',
-//   fields: () => ({
-//     id: { type: GraphQLID },
-//     name: { type: GraphQLString },
-//     balance: { type: GraphQLInt },
-//     profile: new GraphQLList(Profile),
-//     posts: { type: new GraphQLList(GraphQLString) },
-//     userSubscribedTo: { type: new GraphQLList(SubscribersOnAuthors) },
-//     subscribedToUser: { type: new GraphQLList(SubscribersOnAuthors) },
-//   }),
-// });
-
-// const MemberType = new GraphQLObjectType({
-//   name: 'MemberType',
-//   fields: () => ({
-//     id: { type: UUIDType },
-//     isMale: { type: GraphQLBoolean },
-//     yearOfBirth: { type: GraphQLInt },
-//     // user: new GraphQLList(User),
-//   }),
-// });
 
 const query = new GraphQLObjectType({
   name: 'RootQueryType',
@@ -81,7 +35,46 @@ const query = new GraphQLObjectType({
   },
 });
 
-// const mutation = new GraphQLObjectType({});
+const mutation = new GraphQLObjectType({
+  name: 'Mutation',
+  fields: {
+    createPost: {
+      type: post,
+      args: {
+        dto: { type: new GraphQLNonNull(createPostInput) },
+      },
+      resolve: (parent, { dto }, context: FastifyInstance) => {
+        console.log('DATA: ');
+        console.log(dto);
+        return context.prisma.post.create({
+          data: dto,
+        });
+      },
+    },
+    createUser: {
+      type: user,
+      args: {
+        dto: { type: new GraphQLNonNull(createUserInput) },
+      },
+      resolve: (parent, { dto }, context: FastifyInstance) => {
+        return context.prisma.user.create({
+          data: dto,
+        });
+      },
+    },
+    createProfile: {
+      type: profileType,
+      args: {
+        dto: { type: new GraphQLNonNull(createProfileInput) },
+      },
+      resolve: (parent, { dto }, context: FastifyInstance) => {
+        return context.prisma.profile.create({
+          data: dto,
+        });
+      },
+    },
+  },
+});
 
 const plugin: FastifyPluginAsyncTypebox = async (fastify) => {
   fastify.route({
@@ -96,6 +89,7 @@ const plugin: FastifyPluginAsyncTypebox = async (fastify) => {
     async handler(req) {
       const schema = new GraphQLSchema({
         query: query,
+        mutation: mutation,
       });
       return await graphql({
         schema: schema,
