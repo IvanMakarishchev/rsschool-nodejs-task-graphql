@@ -1,7 +1,7 @@
 import { GraphQLBoolean, GraphQLInt, GraphQLObjectType } from 'graphql';
 import { UUIDType } from './uuid.js';
 import { memberId, memberTypes } from './memberType.js';
-import { prismaDB } from '../index.js';
+import { FastifyInstance } from 'fastify';
 
 export const profileType = new GraphQLObjectType({
   name: 'Profiles',
@@ -15,8 +15,8 @@ export const profileType = new GraphQLObjectType({
     memberType: {
       type: memberTypes,
       args: { memberTypeId: { type: memberId } },
-      resolve: async (parent, args: { memberTypeId: string }) => {
-        return prismaDB.memberType.findFirst({
+      resolve: async (parent, args: { memberTypeId: string }, context: FastifyInstance) => {
+        return context.prisma.memberType.findFirst({
           where: {
             id: args.memberTypeId,
           },

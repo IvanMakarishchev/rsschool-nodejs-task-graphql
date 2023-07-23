@@ -14,11 +14,12 @@ export const userResolver = {
   type: user,
   args: { id: { type: UUIDType } },
   resolve: async (parent, args: { id: string }, context: FastifyInstance) => {
-    if (!args.id) return null;
-    return await context.prisma.user.findUnique({
-      where: {
-        id: args.id,
-      },
-    });
+    return !args.id
+      ? null
+      : await context.prisma.user.findUnique({
+          where: {
+            id: args.id,
+          },
+        });
   },
 };

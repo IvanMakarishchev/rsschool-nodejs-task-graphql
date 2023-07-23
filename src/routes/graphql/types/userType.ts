@@ -14,56 +14,60 @@ export const user = new GraphQLObjectType({
       type: profileType,
       args: { id: { type: UUIDType } },
       resolve: async (args: { id: string }) => {
-        if (!args.id) return null;
-        return await prismaDB.profile.findFirst({
-          where: {
-            userId: args.id,
-          },
-        });
+        return !args.id
+          ? null
+          : await prismaDB.profile.findFirst({
+              where: {
+                userId: args.id,
+              },
+            });
       },
     },
     posts: {
       type: new GraphQLList(post),
       args: { id: { type: UUIDType } },
       resolve(args: { id: string }) {
-        if (!args.id) return null;
-        return prismaDB.post.findMany({
-          where: {
-            authorId: args.id,
-          },
-        });
+        return !args.id
+          ? null
+          : prismaDB.post.findMany({
+              where: {
+                authorId: args.id,
+              },
+            });
       },
     },
     userSubscribedTo: {
       type: new GraphQLList(user),
       args: { id: { type: UUIDType } },
       resolve(args: { id: string }) {
-        if (!args.id) return null;
-        return prismaDB.user.findMany({
-          where: {
-            subscribedToUser: {
-              some: {
-                subscriberId: args.id,
+        return !args.id
+          ? null
+          : prismaDB.user.findMany({
+              where: {
+                subscribedToUser: {
+                  some: {
+                    subscriberId: args.id,
+                  },
+                },
               },
-            },
-          },
-        });
+            });
       },
     },
     subscribedToUser: {
       type: new GraphQLList(user),
       args: { id: { type: UUIDType } },
       resolve(args: { id: string }) {
-        if (!args.id) return null;
-        return prismaDB.user.findMany({
-          where: {
-            userSubscribedTo: {
-              some: {
-                authorId: args.id,
+        return !args.id
+          ? null
+          : prismaDB.user.findMany({
+              where: {
+                userSubscribedTo: {
+                  some: {
+                    authorId: args.id,
+                  },
+                },
               },
-            },
-          },
-        });
+            });
       },
     },
   }),

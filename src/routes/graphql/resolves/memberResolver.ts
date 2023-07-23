@@ -14,11 +14,12 @@ export const memberResolver = {
   type: memberTypes,
   args: { id: { type: memberId } },
   resolve: (parent, args: { id: MemberTypeId }, context: FastifyInstance) => {
-    if (!args.id) return null;
-    return context.prisma.memberType.findUnique({
-      where: {
-        id: args.id,
-      },
-    });
+    return !args.id
+      ? null
+      : context.prisma.memberType.findUnique({
+          where: {
+            id: args.id,
+          },
+        });
   },
 };

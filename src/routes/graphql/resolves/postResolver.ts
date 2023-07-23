@@ -13,12 +13,13 @@ export const postsResolver = {
 export const userPostsResolver = {
   type: new GraphQLList(post),
   resolve(parent, args: { id: string }, context: FastifyInstance) {
-    if (!args.id) return null;
-    return context.prisma.post.findMany({
-      where: {
-        authorId: args.id
-      }
-    });
+    return !args.id
+      ? null
+      : context.prisma.post.findMany({
+          where: {
+            authorId: args.id,
+          },
+        });
   },
 };
 
@@ -26,11 +27,12 @@ export const postResolver = {
   type: post,
   args: { id: { type: UUIDType } },
   resolve: async (parent, args: { id: string }, context: FastifyInstance) => {
-    if (!args.id) return null;
-    return await context.prisma.post.findFirst({
-      where: {
-        id: args.id,
-      },
-    });
+    return !args.id
+      ? null
+      : await context.prisma.post.findFirst({
+          where: {
+            id: args.id,
+          },
+        });
   },
 };

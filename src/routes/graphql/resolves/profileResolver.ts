@@ -14,12 +14,13 @@ export const userProfileResolver = {
   type: profileType,
   args: { id: { type: UUIDType } },
   resolve: async (parent, args: { id: string }, context: FastifyInstance) => {
-    if (!args.id) return null;
-    return await context.prisma.profile.findUnique({
-      where: {
-        userId: args.id,
-      },
-    });
+    return !args.id
+      ? null
+      : await context.prisma.profile.findUnique({
+          where: {
+            userId: args.id,
+          },
+        });
   },
 };
 
@@ -27,8 +28,7 @@ export const profileResolver = {
   type: profileType,
   args: { id: { type: UUIDType } },
   resolve: async (parent, args: { id: string }, context: FastifyInstance) => {
-    if (!args.id) return null;
-    return await context.prisma.profile.findUnique({
+    return !args.id ? null : await context.prisma.profile.findUnique({
       where: {
         id: args.id,
       },
