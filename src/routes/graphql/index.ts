@@ -1,9 +1,11 @@
 import { FastifyPluginAsyncTypebox } from '@fastify/type-provider-typebox';
 import { createGqlResponseSchema, gqlResponseSchema } from './schemas.js';
 import {
+  GraphQLInputObjectType,
   GraphQLNonNull,
   GraphQLObjectType,
   GraphQLSchema,
+  GraphQLString,
   graphql,
 } from 'graphql';
 import { profilesResolver, profileResolver } from './resolves/profileResolver.js';
@@ -18,6 +20,7 @@ import { profileType } from './types/profileType.js';
 import { createUserInput } from './mutations/createUserData.js';
 import { createProfileInput } from './mutations/createProfileData.js';
 import { PrismaClient } from '@prisma/client';
+import { UUIDType } from './types/uuid.js';
 
 export const prismaDB = new PrismaClient();
 
@@ -44,8 +47,6 @@ const mutation = new GraphQLObjectType({
         dto: { type: new GraphQLNonNull(createPostInput) },
       },
       resolve: (parent, { dto }, context: FastifyInstance) => {
-        console.log('DATA: ');
-        console.log(dto);
         return context.prisma.post.create({
           data: dto,
         });

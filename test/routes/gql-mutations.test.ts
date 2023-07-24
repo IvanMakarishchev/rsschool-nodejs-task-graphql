@@ -46,7 +46,10 @@ await test('gql-mutations', async (t) => {
       },
     });
 
-    console.log(data);
+    // console.log('QUERY:')
+    // console.log(body: data);
+    console.log('ERROR:')
+    console.log(errors);
 
     const { body: foundCreatedPost } = await getPost(app, data.createPost.id);
     const { body: foundCreatedUser } = await getUser(app, data.createUser.id);
