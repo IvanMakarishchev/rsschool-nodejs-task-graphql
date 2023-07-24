@@ -1,6 +1,7 @@
 import { FastifyPluginAsyncTypebox } from '@fastify/type-provider-typebox';
 import { createGqlResponseSchema, gqlResponseSchema } from './schemas.js';
 import {
+  GraphQLBoolean,
   GraphQLInputObjectType,
   GraphQLNonNull,
   GraphQLObjectType,
@@ -21,6 +22,9 @@ import { createUserInput } from './mutations/createUserData.js';
 import { createProfileInput } from './mutations/createProfileData.js';
 import { PrismaClient } from '@prisma/client';
 import { UUIDType } from './types/uuid.js';
+import { changePostInput } from './mutations/changePostData.js';
+import { changeProfileInput } from './mutations/changeProfileData.js';
+import { changeUserInput } from './mutations/changeUserData.js';
 
 export const prismaDB = new PrismaClient();
 
@@ -70,6 +74,120 @@ const mutation = new GraphQLObjectType({
       },
       resolve: (parent, { dto }, context: FastifyInstance) => {
         return context.prisma.profile.create({
+          data: dto,
+        });
+      },
+    },
+    deletePost: {
+      type: GraphQLBoolean,
+      args: {
+        id: { type: UUIDType },
+      },
+      resolve: async (parent, { id }, context: FastifyInstance) => {
+        if (!id) return false;
+        const deletePost = await context.prisma.post.findUnique({
+          where: {
+            id: id,
+          },
+        });
+        if (!deletePost) return false;
+        return (await context.prisma.post.delete({
+          where: {
+            id: id,
+          },
+        }))
+          ? true
+          : false;
+      },
+    },
+    deleteProfile: {
+      type: GraphQLBoolean,
+      args: {
+        id: { type: UUIDType },
+      },
+      resolve: async (parent, { id }, context: FastifyInstance) => {
+        if (!id) return false;
+        const deleteProfile = await context.prisma.profile.findUnique({
+          where: {
+            id: id,
+          },
+        });
+        if (!deleteProfile) return false;
+        return (await context.prisma.profile.delete({
+          where: {
+            id: id,
+          },
+        }))
+          ? true
+          : false;
+      },
+    },
+    deleteUser: {
+      type: GraphQLBoolean,
+      args: {
+        id: { type: UUIDType },
+      },
+      resolve: async (parent, { id }, context: FastifyInstance) => {
+        if (!id) return false;
+        const deleteUser = await context.prisma.user.findUnique({
+          where: {
+            id: id,
+          },
+        });
+        if (!deleteUser) return false;
+        return (await context.prisma.user.delete({
+          where: {
+            id: id,
+          },
+        }))
+          ? true
+          : false;
+      },
+    },
+    changePost: {
+      type: post,
+      args: {
+        id: { type: UUIDType },
+        dto: { type: new GraphQLNonNull(changePostInput) },
+      },
+      resolve: (parent, { id, dto }, context: FastifyInstance) => {
+        if (!id) return null;
+        return context.prisma.post.update({
+          where: {
+            id: id,
+          },
+          data: dto,
+        });
+      },
+    },
+    changeProfile: {
+      type: profileType,
+      args: {
+        id: { type: UUIDType },
+        dto: { type: new GraphQLNonNull(changeProfileInput) },
+      },
+      resolve: (parent, { id, dto }, context: FastifyInstance) => {
+        if (!id) return null;
+        return context.prisma.profile.update({
+          where: {
+            id: id,
+          },
+          data: dto,
+        });
+      },
+    },
+    changeUser: {
+      type: user,
+      args: {
+        id: { type: UUIDType },
+        dto: { type: new GraphQLNonNull(changeUserInput) },
+      },
+      resolve: (parent, { id, dto }, context: FastifyInstance) => {
+        if (!id) return null;
+        return context.prisma.user.update({
+          where: {
+            id: id,
+          },
           data: dto,
         });
       },

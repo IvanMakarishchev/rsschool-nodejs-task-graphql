@@ -9,13 +9,16 @@ export const profileType = new GraphQLObjectType({
     id: { type: UUIDType },
     isMale: { type: GraphQLBoolean },
     yearOfBirth: { type: GraphQLInt },
-    memberTypeId: {
-      type: memberId,
-    },
+    userId: { type: UUIDType },
+    memberTypeId: { type: memberId },
     memberType: {
       type: memberTypes,
       args: { memberTypeId: { type: memberId } },
-      resolve: async (parent, args: { memberTypeId: string }, context: FastifyInstance) => {
+      resolve: async (
+        parent,
+        args: { memberTypeId: string },
+        context: FastifyInstance,
+      ) => {
         return context.prisma.memberType.findFirst({
           where: {
             id: args.memberTypeId,

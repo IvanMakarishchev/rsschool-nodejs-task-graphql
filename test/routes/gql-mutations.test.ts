@@ -46,11 +46,6 @@ await test('gql-mutations', async (t) => {
       },
     });
 
-    // console.log('QUERY:')
-    // console.log(body: data);
-    console.log('ERROR:')
-    console.log(errors);
-
     const { body: foundCreatedPost } = await getPost(app, data.createPost.id);
     const { body: foundCreatedUser } = await getUser(app, data.createUser.id);
     const { body: foundCreatedProfile } = await getProfile(app, data.createProfile.id);
@@ -107,6 +102,8 @@ await test('gql-mutations', async (t) => {
     const { body: foundDeletedPost } = await getPost(app, post1.id);
     const { body: foundCreatedUser } = await getUser(app, user1.id);
     const { body: foundCreatedProfile } = await getProfile(app, profile1.id);
+
+    console.log(errors);
 
     t.ok(!errors);
     t.ok(foundDeletedPost === null);
@@ -210,6 +207,8 @@ await test('gql-mutations', async (t) => {
 
     const { body: subscribedToUser2 } = await subscribedToUser(app, user2.id);
     const { body: subscribedToUser4 } = await subscribedToUser(app, user4.id);
+
+    console.log(errors);
 
     t.ok(!errors);
     t.ok(subscribedToUser2[0].id === user1.id);

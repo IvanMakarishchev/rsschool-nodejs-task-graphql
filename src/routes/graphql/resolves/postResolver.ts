@@ -12,7 +12,7 @@ export const postsResolver = {
 
 export const userPostsResolver = {
   type: new GraphQLList(post),
-  resolve(parent, args: { id: string }, context: FastifyInstance) {
+  resolve: (parent, args: { id: string }, context: FastifyInstance) => {
     return !args.id
       ? null
       : context.prisma.post.findMany({
