@@ -1,7 +1,10 @@
 import { FastifyPluginAsyncTypebox } from '@fastify/type-provider-typebox';
 import { createGqlResponseSchema, gqlResponseSchema } from './schemas.js';
-import { GraphQLObjectType, GraphQLSchema, graphql } from 'graphql';
-import { profilesResolver, profileResolver } from './queries/resolvers/profileResolver.js';
+import { GraphQLObjectType, GraphQLSchema, graphql, parse, validate } from 'graphql';
+import {
+  profilesResolver,
+  profileResolver,
+} from './queries/resolvers/profileResolver.js';
 import { userResolver, usersResolver } from './queries/resolvers/usersResolver.js';
 import { postResolver, postsResolver } from './queries/resolvers/postResolver.js';
 import { memberResolver, membersResolver } from './queries/resolvers/memberResolver.js';
@@ -17,6 +20,7 @@ import { changeProfileResolver } from './mutations/resolvers/changeProfileResolv
 import { changeUserResolver } from './mutations/resolvers/changeUserResolver.js';
 import { subscribeToResolver } from './mutations/resolvers/subscribeToResolver.js';
 import { unsubsctibeFromResolver } from './mutations/resolvers/unsubscribeFromResolver.js';
+import depthLimit from 'graphql-depth-limit';
 
 export const prismaDB = new PrismaClient();
 
@@ -66,12 +70,15 @@ const plugin: FastifyPluginAsyncTypebox = async (fastify) => {
         query: query,
         mutation: mutation,
       });
-      return await graphql({
-        schema: schema,
-        source: req.body.query,
-        variableValues: req.body.variables,
-        contextValue: fastify,
-      });
+      const errors = validate(schema, parse(req.body.query), [depthLimit(5)]);
+      return !errors.length
+        ? await graphql({
+            schema: schema,
+            source: req.body.query,
+            variableValues: req.body.variables,
+            contextValue: fastify,
+          })
+        : { errors };
     },
   });
 };

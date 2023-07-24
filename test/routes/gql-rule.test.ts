@@ -36,6 +36,8 @@ await test('gql-rule', async (t) => {
       },
     });
 
+    console.log(errors);
+
     t.ok(errors.length === 1);
     const message = errors[0].message as string;
     t.ok(message.endsWith('exceeds maximum operation depth of 5'));
