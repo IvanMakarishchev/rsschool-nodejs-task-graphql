@@ -2,7 +2,7 @@ import { GraphQLObjectType, GraphQLString, GraphQLFloat, GraphQLList } from 'gra
 import { UUIDType } from './uuid.js';
 import { profileType } from './profileType.js';
 import { post } from './postType.js';
-import { prismaDB } from '../index.js';
+import { prismaDB } from '../../index.js';
 
 export const user = new GraphQLObjectType({
   name: 'User',

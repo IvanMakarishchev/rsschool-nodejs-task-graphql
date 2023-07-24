@@ -1,5 +1,5 @@
 import { GraphQLFloat, GraphQLInputObjectType } from "graphql";
-import { UUIDType } from "../types/uuid.js";
+import { UUIDType } from "../../queries/types/uuid.js";
 
 export const changeUserInput = new GraphQLInputObjectType({
   name: "ChangeUserInput",

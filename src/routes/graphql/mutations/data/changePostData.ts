@@ -1,5 +1,5 @@
 import { GraphQLInputObjectType, GraphQLString } from 'graphql';
-import { UUIDType } from '../types/uuid.js';
+import { UUIDType } from '../../queries/types/uuid.js';
 
 export const changePostInput = new GraphQLInputObjectType({
   name: 'ChangePostInput',

@@ -1,7 +1,7 @@
 import { FastifyInstance } from 'fastify';
 import { GraphQLList } from 'graphql';
 import { memberId, memberTypes } from '../types/memberType.js';
-import { MemberTypeId } from '../../member-types/schemas.js';
+import { MemberTypeId } from '../../../member-types/schemas.js';
 
 export const membersResolver = {
   type: new GraphQLList(memberTypes),

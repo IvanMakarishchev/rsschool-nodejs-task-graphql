@@ -10,20 +10,6 @@ export const profilesResolver = {
   },
 };
 
-export const userProfileResolver = {
-  type: profileType,
-  args: { id: { type: UUIDType } },
-  resolve: async (parent, args: { id: string }, context: FastifyInstance) => {
-    return !args.id
-      ? null
-      : await context.prisma.profile.findUnique({
-          where: {
-            userId: args.id,
-          },
-        });
-  },
-};
-
 export const profileResolver = {
   type: profileType,
   args: { id: { type: UUIDType } },
