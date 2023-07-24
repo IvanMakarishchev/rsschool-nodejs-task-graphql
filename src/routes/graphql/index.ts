@@ -192,6 +192,46 @@ const mutation = new GraphQLObjectType({
         });
       },
     },
+    subscribeTo: {
+      type: user,
+      args: {
+        userId: { type: UUIDType },
+        authorId: { type: UUIDType },
+      },
+      resolve: (parent, { userId, authorId }, context: FastifyInstance) => {
+        return context.prisma.user.update({
+          where: {
+            id: userId,
+          },
+          data: {
+            userSubscribedTo: {
+              create: {
+                authorId: authorId,
+              },
+            },
+          },
+        });
+      },
+    },
+    unsubscribeFrom: {
+      type: GraphQLBoolean,
+      args: {
+        userId: { type: UUIDType },
+        authorId: { type: UUIDType },
+      },
+      resolve: async (parent, { userId, authorId }, context: FastifyInstance) => {
+        return (await context.prisma.subscribersOnAuthors.delete({
+          where: {
+            subscriberId_authorId: {
+              authorId: authorId,
+              subscriberId: userId,
+            },
+          },
+        }))
+          ? true
+          : false;
+      },
+    },
   },
 });
 
